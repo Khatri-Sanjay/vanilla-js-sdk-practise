@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using a JavaScript Class</title>
+</head>
+<body>
+
+    <h1>JavaScript Class Example</h1>
+
+    <div id="output"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Create an instance of the Person class
+        const person1 = new Person("Alice", 30);
+        const person2 = new Person("Bob", 25);
+
+        // Display the greeting in the 'output' div
+        document.getElementById("output").innerHTML = `
+            ${person1.greet()} <br>
+            ${person2.greet()}
+        `;
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Module</title>
+    <style>
+        /* Simple styling for the payment form */
+        .payment-form {
+            width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="text"], input[type="number"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-form">
+        <h2>Payment</h2>
+        <label for="cardholder-name">Cardholder Name</label>
+        <input type="text" id="cardholder-name" placeholder="Cardholder Name" required />
+
+        <label for="card-number">Card Number</label>
+        <input type="number" id="card-number" placeholder="Card Number" required />
+
+        <label for="expiry-date">Expiry Date (MM/YY)</label>
+        <input type="text" id="expiry-date" placeholder="MM/YY" required />
+
+        <label for="cvv">CVV</label>
+        <input type="number" id="cvv" placeholder="CVV" required />
+
+        <button id="pay-button">Pay Now</button>
+        <div id="error-message" class="error"></div>
+    </div>
+
+    <script>
+
+        document.getElementById('pay-button').addEventListener('click', async function (e) {
+            e.preventDefault();  // Prevent form submission
+
+            // Collect payment data from the form
+            const cardholderName = document.getElementById('cardholder-name').value;
+            const cardNumber = document.getElementById('card-number').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            const cvv = document.getElementById('cvv').value;
+
+            // Validate input data (basic checks)
+            if (!cardholderName || !cardNumber || !expiryDate || !cvv) {
+                document.getElementById('error-message').textContent = 'Please fill in all fields.';
+                return;
+            }
+
+            // Create a payment object
+            const paymentData = {
+                amount: 5000, // Amount in cents (e.g., $50.00)
+                cardholderName,
+                cardNumber,
+                expiryDate,
+                cvv
+            };
+
+            try {
+                // Send payment data to the backend to create a payment intent
+                const response = await fetch('/api/payment/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(paymentData)
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    // Handle error response from backend (e.g., invalid card, etc.)
+                    document.getElementById('error-message').textContent = `Error: ${data.error}`;
+                } else {
+                    // Handle successful response (PaymentIntent created)
+                    const clientSecret = data.clientSecret;
+                    alert('Payment Intent created! Client Secret: ' + clientSecret);
+                    // You can now use the clientSecret to complete the payment on the client side
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error-message').textContent = 'Something went wrong!';
+            }
+        });
+    </script>
+</body>
+</html>
